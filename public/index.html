@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>João Simões | OMR</title>
+    <title>Quiz OMR</title>
 
     <!-- BOOTSTRAP -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
@@ -23,11 +23,55 @@
 </head>
 
 <body>
-
+    <div class="container">
+        <div class="w-100">
+            <div class="mb-3 mx-auto w-75" style="margin-top: 60%;">
+                <b>
+          <h3 for="username" class="form-label">Username</h3>
+        </b>
+                <input type="email" class="form-control" id="username" placeholder="BestUsernameEver">
+                <button type="submit" class="btn btn-dark mb-3 mt-3 float-end" onclick="submitUsername()">Submit</button>
+            </div>
+        </div>
+        <div class="w-75 mx-auto" style="margin-top: 60%;">
+            <h5>Como jogar?</h5>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero dignissimos recusandae error minus veniam totam minima optio ducimus quia non accusantium amet sed dicta cupiditate, laborum in enim et nesciunt!</p>
+        </div>
+    </div>
 
     <script>
-        alert("a")
-        alert(MediaDevices.getUserMedia())
+        async function submitUsername() {
+            const username = document.getElementById("username").value
+
+            if (username.trim() == '')
+                alert('Please use a valid username.')
+            else {
+                await fetch('http://127.0.0.1/submit/username', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username
+                    })
+                }).then(async(res) => {
+                    const data = await res.json()
+
+                    if (data.valid) {
+                        sessionStorage.setItem("sessionid", data.sessionid)
+                        sessionStorage.setItem("username", data.username)
+                        sessionStorage.setItem("questions", JSON.stringify(data.questions))
+
+                        alert("Let's play a game!")
+
+                        window.location.href = '/quiz'
+                    } else {
+                        alert(data.message)
+                    }
+                })
+            }
+        }
     </script>
 </body>
 
