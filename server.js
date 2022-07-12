@@ -5,7 +5,9 @@ const cors = require('cors');
 const morgan = require('morgan')
 const request = require("request")
 const fileUpload = require('express-fileupload')
-const multer = require('multer');
+const { PythonShell } = require('python-shell');
+const { spawn } = require('child_process');
+const { resolve } = require('path');
 const PORT = 80
 
 app.use(cors());
@@ -53,7 +55,7 @@ app.get('*', (req, res) => {
 
 
 //UPLOAD ANSWER
-app.post('/submit/answer', function(req, res) {
+app.post('/submit/answer', async (req, res) => {
     let pic;
     let uploadPath;
 
@@ -63,24 +65,63 @@ app.post('/submit/answer', function(req, res) {
 
     // The name of the input field (i.e. "pic") is used to retrieve the uploaded file
     pic = req.files.pic;
-    console.log(pic);
-    uploadPath = __dirname + '/uploads/' + req.body.sessionid + '.' + pic.mimetype.split('/')[1];
+    filename = req.body.sessionid + '.' + pic.mimetype.split('/')[1];
+    uploadPath = __dirname + '/sessions/' + filename
+    console.log(uploadPath);
 
     // Use the mv() method to place the file somewhere on your server
-    pic.mv(uploadPath, function(err) {
+    pic.mv(uploadPath, async (err) => {
         if (err)
             return res.status(500).send(err);
 
-        res.redirect('/results');
+        //res.redirect('/results');
     });
-});
+
+
+    var answers = await getAnswers(filename)
+    if (answers.status == 'OK') {
+        //inserir na bd
+        res.redirect('/results')
+    }
+
+    else if (answers.status == 'KO')
+        res.status(400).send("An error ocurred, please submit a new picture!")
+
+
+
+
+    async function getAnswers(filename) {
+        return new Promise(resolve => {
+
+            let pyshell = new PythonShell('ans.py', { args: [`-i ${filename}`] });
+
+            pyshell.on('message', function (message) {
+                resolve({ status: "OK", message: message })
+            })
+
+            pyshell.end(function (err, code, signal) {
+                if (err) {
+                    resolve({ status: "KO", message: err })
+                }
+            })
+
+
+        })
+
+    }
+
+
+})
+
+
+
 
 //SUBMIT USERNAME
-app.post('/submit/username', function(req, res) {
+app.post('/submit/username', function (req, res) {
     const username = req.body.username
 
 
-    request('https://opentdb.com/api.php?amount=3&category=9&difficulty=medium&type=multiple', function(error, response, body) {
+    request('https://opentdb.com/api.php?amount=3&category=9&difficulty=medium&type=multiple', function (error, response, body) {
         var data = JSON.parse(body)
         var questions = []
 
@@ -94,7 +135,7 @@ app.post('/submit/username', function(req, res) {
             })
         }
 
-        return res.status(200).json({ valid: true, sessionid: "1", username: username, questions: questions })
+        return res.status(200).json({ valid: true, sessionid: "123", username: username, questions: questions })
     });
 
 });
