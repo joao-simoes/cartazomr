@@ -31,11 +31,21 @@
     <p id="results"></p>
 
     <script>
+
         function getResults() {
             return new Promise(resolve => {
-                await fetch("https://quizomr.joao-simoes.pt/session/results", { "method": "POST", "content-type": "application/json", "body": JSON.stringify({"sessionid": sessionStorage.getItem("sessionid")})})
+                await fetch("https://quizomr.joao-simoes.pt/session/results", { "method": "POST", "content-type": "application/json", "body": JSON.stringify({"sessionid": sessionStorage.getItem("sessionid")})}).then(async(result) => {
+                    const data = await result.json()
+                    resolve(data)
+                })
             })
         }
+
+        async function main() {
+            document.getElementById("results").innerHTML = await getResults()
+        }
+        
+        main()
     </script>
 </body>
 
