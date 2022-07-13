@@ -27,23 +27,23 @@ var binds = {}
 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'))
+	res.sendFile(path.join(__dirname, 'public/index.html'))
 })
 
 app.get('/quiz', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/quiz.html'))
+	res.sendFile(path.join(__dirname, 'public/quiz.html'))
 })
 
 app.get('/submission', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/submission.html'))
+	res.sendFile(path.join(__dirname, 'public/submission.html'))
 })
 
 app.get('/results', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/results.html'))
+	res.sendFile(path.join(__dirname, 'public/results.html'))
 })
 
 app.get('*', (req, res) => {
-    res.redirect('/')
+	res.redirect('/')
 })
 
 
@@ -58,73 +58,81 @@ app.get('*', (req, res) => {
 
 //UPLOAD ANSWER
 app.post('/submit/answer', async (req, res) => {
-    let pic;
-    let uploadPath;
+	let pic;
+	let uploadPath;
 
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
-
-    // The name of the input field (i.e. "pic") is used to retrieve the uploaded file
-    pic = req.files.pic;
-    filename = req.body.sessionid + '.' + pic.mimetype.split('/')[1];
-    uploadPath = __dirname + '/sessions/' + filename
-    console.log(uploadPath);
-
-    // Use the mv() method to place the file somewhere on your server
-    pic.mv(uploadPath, async (err) => {
-        if (err)
-            return res.status(500).send(err);
-
-        //res.redirect('/results');
-    });
-
-
-    var answers = await getAnswers(filename)
-    console.log(answers)
-    if (answers.status == 'OK') {
-
-	var results = []
-
-	for (let i = 0; i < 3; i++) {
-		var obj = {"uaid": answers[i], "uadesc": binds[req.body.sessionid].questions[i].choices[answers[i]] , "caid": binds[req.body.sessionid].questions[i].caid, "cadesc": binds[req.body.sessionid].questions[i].choices[binds[req.body.sessionid].questions[i].caid]}
-		results.push(obj)
+	if (!req.files || Object.keys(req.files).length === 0) {
+		return res.status(400).send('No files were uploaded.');
 	}
 
-        //TODO inserir na bd
-        res.redirect('/results?results=' + JSON.stringify(results))
-    }
+	// The name of the input field (i.e. "pic") is used to retrieve the uploaded file
+	pic = req.files.pic;
+	filename = req.body.sessionid + '.' + pic.mimetype.split('/')[1];
+	uploadPath = __dirname + '/sessions/' + filename
+	console.log(uploadPath);
 
-    else if (answers.status == 'KO')
-        res.status(400).send("An error ocurred, please submit a new picture!")
+	// Use the mv() method to place the file somewhere on your server
+	pic.mv(uploadPath, async (err) => {
+		if (err)
+			return res.status(500).send(err);
 
-
-
-
-    async function getAnswers(filename) {
-        return new Promise(resolve => {
-
-		let options = {
- 			pythonPath: '/usr/bin/python',
-			args: [`-i ${filename}`]
-		};
-
-            	let pyshell = new PythonShell(__dirname + '/ans.py', { args: [`-i ${filename}`] });
-            	pyshell.on('message', function (message) {
-			console.log(message)
-			resolve({ status: "OK", message: message })
-            	})
-
-            	pyshell.end(function (err, code, signal) {
-                	if (err) {
-                    		resolve({ status: "KO", message: err })
-                	}
-            })
+		//res.redirect('/results');
+	});
 
 
-        })
+	var answers = await getAnswers(filename)
+	console.log(answers)
+	if (answers.status == 'OK') {
 
-    }
+		var results = []
+
+		for (let i = 0; i < 3; i++) {
+			const uaid = answers[i]
+			const q = binds[req.body.sessionid].questions[i].question
+			const uadesc = binds[req.body.sessionid].questions[i].choices[answers[i]]
+			const caid = binds[req.body.sessionid].questions[i].caid
+			const cadesc = binds[req.body.sessionid].questions[i].choices[binds[req.body.sessionid].questions[i].caid]
+
+			var obj = { q: "q", "uaid": uaid, "uadesc": uadesc, "caid": caid, "cadesc": cadesc }
+			results.push(obj)
+		}
+
+		binds[req.body.sessionid].results = results
+
+		//TODO inserir na bd
+		res.redirect('/results')
+	}
+
+	else if (answers.status == 'KO')
+		res.status(400).send("An error ocurred, please submit a new picture!")
+
+
+
+
+	async function getAnswers(filename) {
+		return new Promise(resolve => {
+
+			let options = {
+				pythonPath: '/usr/bin/python',
+				args: [`-i ${filename}`]
+			};
+
+			let pyshell = new PythonShell(__dirname + '/ans.py', { args: [`-i ${filename}`] });
+			pyshell.on('message', function (message) {
+				console.log(message)
+				resolve({ status: "OK", message: message })
+			})
+
+			pyshell.end(function (err, code, signal) {
+				if (err) {
+					resolve({ status: "KO", message: err })
+				}
+			})
+
+
+		})
+
+	}
 
 
 })
@@ -144,27 +152,27 @@ app.post('/submit/username', async function (req, res) {
 
 	var questions = []
 	for (let question of data) {
-       		var choices = question.incorrectAnswers
-            	choices.push(question.correctAnswer)
+		var choices = question.incorrectAnswers
+		choices.push(question.correctAnswer)
 		console.log(question)
-            	questions.push({
-                	"question": question.question,
-                	"choices": choices
-            	})
+		questions.push({
+			"question": question.question,
+			"choices": choices
+		})
 	}
 
 	function shuffle(array) {
-  		let currentIndex = array.length,  randomIndex;
+		let currentIndex = array.length, randomIndex;
 
-  		// While there remain elements to shuffle.
-  		while (currentIndex != 0) {
+		// While there remain elements to shuffle.
+		while (currentIndex != 0) {
 
-    		// Pick a remaining element.
-    		randomIndex = Math.floor(Math.random() * currentIndex);
-    		currentIndex--;
+			// Pick a remaining element.
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex--;
 
-    		// And swap it with the current element.
-    		[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+			// And swap it with the current element.
+			[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
 
 		}
 
@@ -180,7 +188,7 @@ app.post('/submit/username', async function (req, res) {
 
 		var generated = Math.random().toString(36).slice(2);
 
-		while(generated in binds) {
+		while (generated in binds) {
 			generated = Math.random().toString(36).slice(2);
 		}
 
@@ -188,14 +196,22 @@ app.post('/submit/username', async function (req, res) {
 	}
 
 	const sessionid = gensid()
-	binds[sessionid] = {"sessionid": sessionid, "username": username, "questions": questions }
+	binds[sessionid] = { "sessionid": sessionid, "username": username, "questions": questions }
 	console.log(binds)
-        return res.status(200).json({ valid: true, sessionid: sessionid, username: username, questions: questions })
+	return res.status(200).json({ valid: true, sessionid: sessionid, username: username, questions: questions })
 });
 
 
+
+app.post("/session/answers", (req, res) => {
+	res.json(binds[req.body.sessionid].results)
+})
+
+
+
+
 app.post('*', (req, res) => {
-    res.status(404).send('Not found!')
+	res.status(404).send('Not found!')
 })
 
 
@@ -203,5 +219,5 @@ app.post('*', (req, res) => {
 
 
 app.listen(PORT, (req, res) => {
-    console.log(`Server running on port ${PORT}`);
+	console.log(`Server running on port ${PORT}`);
 })
