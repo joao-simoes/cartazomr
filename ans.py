@@ -1,4 +1,5 @@
 # import the necessary packages
+import os
 import sys
 from imutils.perspective import four_point_transform
 from imutils import contours
@@ -46,7 +47,7 @@ args = vars(ap.parse_args())
 
 # load the image, convert it to grayscale, blur it
 # slightly, then find edges
-imgpath = './sessions/' + args["image"].strip()
+imgpath = '/home/jsimoes/cartazomr/sessions/' + args["image"].strip()
 imageOr = cv2.imread(imgpath)
 image = ResizeWithAspectRatio(imageOr, width=600)     
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

@@ -1,0 +1,81 @@
+--2022-07-12 21:57:02--  https://opentdb.com/api.php?amount=3
+Resolving opentdb.com (opentdb.com)... 173.236.137.64
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 21:59:14--  (try: 2)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:01:26--  (try: 3)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:03:40--  (try: 4)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:05:54--  (try: 5)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:08:10--  (try: 6)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:10:27--  (try: 7)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:12:43--  (try: 8)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:15:01--  (try: 9)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:17:19--  (try:10)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:19:39--  (try:11)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:21:59--  (try:12)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:24:18--  (try:13)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:26:37--  (try:14)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:28:56--  (try:15)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:31:16--  (try:16)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:33:35--  (try:17)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:35:54--  (try:18)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:38:14--  (try:19)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Retrying.
+
+--2022-07-12 22:40:33--  (try:20)  https://opentdb.com/api.php?amount=3
+Connecting to opentdb.com (opentdb.com)|173.236.137.64|:443... failed: Connection timed out.
+Giving up.
+

@@ -8,15 +8,17 @@ const fileUpload = require('express-fileupload')
 const { PythonShell } = require('python-shell');
 const { spawn } = require('child_process');
 const { resolve } = require('path');
-const PORT = 80
+const PORT = 3000
+const fetch = require('node-fetch')
 
+app.set('trust proxy', true)
 app.use(cors());
 app.use(express.json())
 app.use(morgan('common'))
 app.use(express.static('./public'))
 app.use(fileUpload());
 
-
+var binds = {}
 
 
 
@@ -79,9 +81,18 @@ app.post('/submit/answer', async (req, res) => {
 
 
     var answers = await getAnswers(filename)
+    console.log(answers)
     if (answers.status == 'OK') {
-        //inserir na bd
-        res.redirect('/results')
+
+	var results = []
+
+	for (let i = 0; i < 3; i++) {
+		var obj = {"uaid": answers[i], "uadesc": binds[req.body.sessionid].questions[i].choices[answers[i]] , "caid": binds[req.body.sessionid].questions[i].caid, "cadesc": binds[req.body.sessionid].questions[i].choices[binds[req.body.sessionid].questions[i].caid]}
+		results.push(obj)
+	}
+
+        //TODO inserir na bd
+        res.redirect('/results?results=' + JSON.stringify(results))
     }
 
     else if (answers.status == 'KO')
@@ -93,16 +104,21 @@ app.post('/submit/answer', async (req, res) => {
     async function getAnswers(filename) {
         return new Promise(resolve => {
 
-            let pyshell = new PythonShell('ans.py', { args: [`-i ${filename}`] });
+		let options = {
+ 			pythonPath: '/usr/bin/python',
+			args: [`-i ${filename}`]
+		};
 
-            pyshell.on('message', function (message) {
-                resolve({ status: "OK", message: message })
-            })
+            	let pyshell = new PythonShell(__dirname + '/ans.py', { args: [`-i ${filename}`] });
+            	pyshell.on('message', function (message) {
+			console.log(message)
+			resolve({ status: "OK", message: message })
+            	})
 
-            pyshell.end(function (err, code, signal) {
-                if (err) {
-                    resolve({ status: "KO", message: err })
-                }
+            	pyshell.end(function (err, code, signal) {
+                	if (err) {
+                    		resolve({ status: "KO", message: err })
+                	}
             })
 
 
@@ -117,27 +133,64 @@ app.post('/submit/answer', async (req, res) => {
 
 
 //SUBMIT USERNAME
-app.post('/submit/username', function (req, res) {
-    const username = req.body.username
+app.post('/submit/username', async function (req, res) {
 
+	const username = req.body.username
+	console.log(username)
 
-    request('https://opentdb.com/api.php?amount=3&category=9&difficulty=medium&type=multiple', function (error, response, body) {
-        var data = JSON.parse(body)
-        var questions = []
+	const response = await fetch('https://the-trivia-api.com/api/questions?limit=3&region=PT&difficulty=easy');
+	const data = await response.json();
+	console.log(data)
 
-        for (let question of data.results) {
-            var choices = question.incorrect_answers
-            choices.push(question.correct_answer)
+	var questions = []
+	for (let question of data) {
+       		var choices = question.incorrectAnswers
+            	choices.push(question.correctAnswer)
+		console.log(question)
+            	questions.push({
+                	"question": question.question,
+                	"choices": choices
+            	})
+	}
 
-            questions.push({
-                "question": question.question,
-                "choices": choices
-            })
-        }
+	function shuffle(array) {
+  		let currentIndex = array.length,  randomIndex;
 
-        return res.status(200).json({ valid: true, sessionid: "123", username: username, questions: questions })
-    });
+  		// While there remain elements to shuffle.
+  		while (currentIndex != 0) {
 
+    		// Pick a remaining element.
+    		randomIndex = Math.floor(Math.random() * currentIndex);
+    		currentIndex--;
+
+    		// And swap it with the current element.
+    		[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+
+		}
+
+		return array;
+	}
+
+	for (let i = 0; i < 3; i++) {
+		shuffle(questions[i].choices)
+		questions[i].caid = questions[i].choices.indexOf(data[i].correctAnswer)
+	}
+
+	function gensid() {
+
+		var generated = Math.random().toString(36).slice(2);
+
+		while(generated in binds) {
+			generated = Math.random().toString(36).slice(2);
+		}
+
+		return generated
+	}
+
+	const sessionid = gensid()
+	binds[sessionid] = {"sessionid": sessionid, "username": username, "questions": questions }
+	console.log(binds)
+        return res.status(200).json({ valid: true, sessionid: sessionid, username: username, questions: questions })
 });
 
 
