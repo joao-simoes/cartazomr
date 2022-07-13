@@ -203,7 +203,9 @@ app.post('/submit/username', async function (req, res) {
 
 
 
-app.post("/session/answers", (req, res) => {
+app.post("/session/results", (req, res) => {
+	console.log(binds[req.body.sessionid].results)
+	console.log(req.body.sessionid)
 	res.json(binds[req.body.sessionid].results)
 })
 
