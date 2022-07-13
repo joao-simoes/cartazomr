@@ -88,8 +88,8 @@ app.post('/submit/answer', async (req, res) => {
 
 		for (let i = 0; i < 3; i++) {
 			const q = binds[req.body.sessionid].questions[i].question
-			const uaid = answers[i]
-			const uadesc = binds[req.body.sessionid].questions[i].choices[answers[i]]
+			const uaid = answers.message[i]
+			const uadesc = binds[req.body.sessionid].questions[i].choices[answers.message[i]]
 			const caid = binds[req.body.sessionid].questions[i].caid
 			const cadesc = binds[req.body.sessionid].questions[i].choices[binds[req.body.sessionid].questions[i].caid]
 
