@@ -87,13 +87,13 @@ app.post('/submit/answer', async (req, res) => {
 		var results = []
 
 		for (let i = 0; i < 3; i++) {
-			const uaid = answers[i]
 			const q = binds[req.body.sessionid].questions[i].question
+			const uaid = answers[i]
 			const uadesc = binds[req.body.sessionid].questions[i].choices[answers[i]]
 			const caid = binds[req.body.sessionid].questions[i].caid
 			const cadesc = binds[req.body.sessionid].questions[i].choices[binds[req.body.sessionid].questions[i].caid]
 
-			var obj = { q: "q", "uaid": uaid, "uadesc": uadesc, "caid": caid, "cadesc": cadesc }
+			var obj = { "q": q, "uaid": uaid, "uadesc": uadesc, "caid": caid, "cadesc": cadesc }
 			results.push(obj)
 		}
 
@@ -181,7 +181,7 @@ app.post('/submit/username', async function (req, res) {
 
 	for (let i = 0; i < 3; i++) {
 		shuffle(questions[i].choices)
-		questions[i].caid = questions[i].choices.indexOf(data[i].correctAnswer)
+		questions[i].caid = questions[i].choices.indexOf(data[i].correctAnswer) + 1
 	}
 
 	function gensid() {
